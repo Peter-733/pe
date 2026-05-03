@@ -9,11 +9,11 @@
         body { font-family: "PingFang TC", sans-serif; background-color: var(--retro-bg); color: var(--retro-dark); margin: 0; padding: 15px; }
         header { border: 2px solid var(--retro-dark); padding: 15px; text-align: center; margin-bottom: 20px; background: var(--retro-paper); box-shadow: 4px 4px 0px var(--retro-dark); }
         .day-section { background: var(--retro-paper); border: 1px solid var(--retro-dark); margin-bottom: 12px; box-shadow: 3px 3px 0px var(--retro-dark); overflow: hidden; }
-        .day-header { padding: 12px; background: var(--retro-dark); color: white; display: flex; justify-content: space-between; }
-        .icon-bar { display: flex; gap: 10px; padding: 10px; background: #eee; border-bottom: 1px solid #ddd; justify-content: space-around; }
-        .btn-icon { background: white; border: 1px solid var(--retro-dark); border-radius: 5px; padding: 5px 10px; font-size: 0.8rem; cursor: pointer; box-shadow: 1px 1px 0px var(--retro-dark); }
+        .day-header { padding: 12px; background: var(--retro-dark); color: white; display: flex; justify-content: space-between; font-weight: bold; }
+        .icon-bar { display: flex; gap: 8px; padding: 10px; background: #e9e5d8; border-bottom: 1px solid var(--retro-dark); justify-content: space-around; flex-wrap: wrap; }
+        .btn-icon { background: white; border: 1px solid var(--retro-dark); border-radius: 4px; padding: 6px 8px; font-size: 0.85rem; cursor: pointer; box-shadow: 1px 1px 0px var(--retro-dark); }
         .btn-icon:active { transform: translate(1px, 1px); box-shadow: none; }
-        textarea { width: 100%; height: 120px; border: none; padding: 10px; font-size: 16px; box-sizing: border-box; outline: none; background: transparent; line-height: 1.5; }
+        textarea { width: 100%; height: 130px; border: none; padding: 10px; font-size: 16px; box-sizing: border-box; outline: none; background: transparent; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -27,109 +27,43 @@
 <div id="calendar">
     <script>
         const days = [
-            { d: '5/07', w: 'THU' }, { d: '5/08', w: 'FRI' }, { d: '5/09', w: 'SAT' },
-            { d: '5/10', w: 'SUN' }, { d: '5/11', w: 'MON' }, { d: '5/12', w: 'TUE' }, { d: '5/13', w: 'WED' }
+            { d: '5/07', w: 'THU', info: '抵達 / T-CAT' }, { d: '5/08', w: 'FRI', info: '銀座探索' }, 
+            { d: '5/09', w: 'SAT', info: '' }, { d: '5/10', w: 'SUN', info: '' }, 
+            { d: '5/11', w: 'MON', info: '' }, { d: '5/12', w: 'TUE', info: '' }, 
+            { d: '5/13', w: 'WED', info: '最後採買 / 返程' }
         ];
 
         const categories = [
-            { label: '📍 景點', tag: '【景點】' },
-            { label: '🍱 美食', tag: '【美食】' },
-            { label: '🛍️ 購物', tag: '【購物】' },
-            { label: '🎬 影評', tag: '【影評筆記】' }
+            { label: '📍景點', tag: '【景點】' },
+            { label: '🍱美食', tag: '【美食】' },
+            { label: '🛍️購物', tag: '【購物】' },
+            { label: '🎬影評', tag: '【影評筆記】' }
         ];
 
         days.forEach((day, i) => {
             document.write(`
                 <div class="day-section">
-                    <div class="day-header"><span>${day.d} ${day.w}</span></div>
+                    <div class="day-header"><span>${day.d} ${day.w}</span> <span style="font-size:0.7rem; opacity:0.8;">${day.info}</span></div>
                     <div class="icon-bar">
                         ${categories.map(cat => `<button class="btn-icon" onclick="addTag(${i}, '${cat.tag}')">${cat.label}</button>`).join('')}
                     </div>
-                    <textarea id="note-${i}" oninput="save(${i})" placeholder="點擊上方圖示或在此輸入..."></textarea>
+                    <textarea id="note-${i}" oninput="save(${i})" placeholder="點擊上方按鈕分類記錄..."></textarea>
                 </div>
             `);
         });
 
         function addTag(index, tag) {
             const el = document.getElementById(`note-${index}`);
-            const timestamp = new Date().getHours() + ":" + String(new Date().getMinutes()).padStart(2, '0');
-            el.value += (el.value ? '\n' : '') + tag + ' ' + timestamp + ' - ';
+            const now = new Date();
+            const time = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
+            el.value += (el.value ? '\n' : '') + tag + ' ' + time + ' - ';
             el.focus();
             save(index);
         }
 
-        function save(i) { localStorage.setItem(`tokyo_v2_${i}`, document.getElementById(`note-${i}`).value); }
+        function save(i) { localStorage.setItem(`tokyo_pro_v3_${i}`, document.getElementById(`note-${i}`).value); }
         window.onload = () => days.forEach((_, i) => {
-            const s = localStorage.getItem(`tokyo_v2_${i}`);
-            if (s我明白你的意思了！你希望這份 5/7 到 5/13 的行事曆能像專業的行程規畫 App 一樣，直接點選 **Icon（圖示）** 來分類加入行程，而不是像現在這樣只能手動打字。
-
-我為你重新設計了這款「**日系復古行程面板**」。每一天現在都有快捷按鈕（景點、美食、購物、影評），點一下就能自動加入分類標籤。
-
-### 🛠️ 請更新 `index.html` 為以下代碼
-```html
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Peter's Tokyo Planner</title>
-    <style>
-        :root { --retro-bg: #f0ede5; --retro-dark: #2c3e50; --retro-red: #d35400; --retro-paper: #ffffff; }
-        body { font-family: "PingFang TC", sans-serif; background-color: var(--retro-bg); color: var(--retro-dark); margin: 0; padding: 15px; }
-        header { border: 2px solid var(--retro-dark); padding: 15px; text-align: center; margin-bottom: 20px; background: var(--retro-paper); box-shadow: 4px 4px 0px var(--retro-dark); }
-        .day-section { background: var(--retro-paper); border: 1px solid var(--retro-dark); margin-bottom: 12px; box-shadow: 3px 3px 0px var(--retro-dark); overflow: hidden; }
-        .day-header { padding: 12px; background: var(--retro-dark); color: white; display: flex; justify-content: space-between; }
-        .icon-bar { display: flex; gap: 10px; padding: 10px; background: #eee; border-bottom: 1px solid #ddd; justify-content: space-around; }
-        .btn-icon { background: white; border: 1px solid var(--retro-dark); border-radius: 5px; padding: 5px 10px; font-size: 0.8rem; cursor: pointer; box-shadow: 1px 1px 0px var(--retro-dark); }
-        .btn-icon:active { transform: translate(1px, 1px); box-shadow: none; }
-        textarea { width: 100%; height: 120px; border: none; padding: 10px; font-size: 16px; box-sizing: border-box; outline: none; background: transparent; line-height: 1.5; }
-    </style>
-</head>
-<body>
-
-<header>
-    <div style="font-size: 0.7rem; color: var(--retro-red); font-weight: bold;">MAY 07 - MAY 13, 2026</div>
-    <h1 style="font-size: 1.2rem; margin: 5px 0;">東京旅程紀錄面板</h1>
-    <div style="font-size: 0.75rem;">🏨 相鐵 FRESA INN 日本橋人形町</div>
-</header>
-
-<div id="calendar">
-    <script>
-        const days = [
-            { d: '5/07', w: 'THU' }, { d: '5/08', w: 'FRI' }, { d: '5/09', w: 'SAT' },
-            { d: '5/10', w: 'SUN' }, { d: '5/11', w: 'MON' }, { d: '5/12', w: 'TUE' }, { d: '5/13', w: 'WED' }
-        ];
-
-        const categories = [
-            { label: '📍 景點', tag: '【景點】' },
-            { label: '🍱 美食', tag: '【美食】' },
-            { label: '🛍️ 購物', tag: '【購物】' },
-            { label: '🎬 影評', tag: '【影評筆記】' }
-        ];
-
-        days.forEach((day, i) => {
-            document.write(`
-                <div class="day-section">
-                    <div class="day-header"><span>${day.d} ${day.w}</span></div>
-                    <div class="icon-bar">
-                        ${categories.map(cat => `<button class="btn-icon" onclick="addTag(${i}, '${cat.tag}')">${cat.label}</button>`).join('')}
-                    </div>
-                    <textarea id="note-${i}" oninput="save(${i})" placeholder="點擊上方圖示或在此輸入..."></textarea>
-                </div>
-            `);
-        });
-
-        function addTag(index, tag) {
-            const el = document.getElementById(`note-${index}`);
-            const timestamp = new Date().getHours() + ":" + String(new Date().getMinutes()).padStart(2, '0');
-            el.value += (el.value ? '\n' : '') + tag + ' ' + timestamp + ' - ';
-            el.focus();
-            save(index);
-        }
-
-        function save(i) { localStorage.setItem(`tokyo_v2_${i}`, document.getElementById(`note-${i}`).value); }
-        window.onload = () => days.forEach((_, i) => {
-            const s = localStorage.getItem(`tokyo_v2_${i}`);
+            const s = localStorage.getItem(`tokyo_pro_v3_${i}`);
             if (s) document.getElementById(`note-${i}`).value = s;
         });
     </script>
