@@ -3,112 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Peter's Tokyo Diary 2026</title>
+    <title>Peter's Tokyo Planner</title>
     <style>
-        :root {
-            --retro-bg: #f0ede5; /* 復古紙張色 */
-            --retro-dark: #2c3e50; /* 深藍色 */
-            --retro-red: #d35400; /* 復古橘紅 */
-            --retro-paper: #ffffff;
-        }
-        body { 
-            font-family: "PingFang TC", "Microsoft JhengHei", serif; 
-            background-color: var(--retro-bg); 
-            color: var(--retro-dark); 
-            margin: 0; padding: 15px;
-            line-height: 1.5;
-        }
-        header { 
-            border: 2px solid var(--retro-dark); 
-            padding: 20px; text-align: center; 
-            margin-bottom: 20px; background: var(--retro-paper);
-            box-shadow: 5px 5px 0px var(--retro-dark);
-        }
-        h1 { margin: 0; font-size: 1.4rem; letter-spacing: 2px; }
-        .date-range { font-size: 0.8rem; color: var(--retro-red); font-weight: bold; }
-        
-        .day-section { 
-            background: var(--retro-paper); 
-            border: 1px solid var(--retro-dark); 
-            margin-bottom: 10px; 
-            box-shadow: 3px 3px 0px var(--retro-dark);
-        }
-        .day-header { 
-            padding: 12px 15px; 
-            background: var(--retro-dark); 
-            color: var(--retro-paper); 
-            display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer;
-        }
-        .day-content { padding: 10px; display: none; }
-        .day-content.active { display: block; }
-        
-        textarea { 
-            width: 100%; height: 120px; border: none; 
-            background: repeating-linear-gradient(white, white 24px, #e5e5e5 25px);
-            line-height: 25px; padding: 5px; font-size: 16px; color: #444;
-            resize: none; outline: none; box-sizing: border-box;
-        }
-        .info-bar { font-size: 0.8rem; margin-top: 5px; color: #777; border-top: 1px solid #eee; padding-top: 5px; }
+        :root { --retro-bg: #f0ede5; --retro-dark: #2c3e50; --retro-red: #d35400; --retro-paper: #ffffff; }
+        body { font-family: "PingFang TC", sans-serif; background-color: var(--retro-bg); color: var(--retro-dark); margin: 0; padding: 15px; }
+        header { border: 2px solid var(--retro-dark); padding: 15px; text-align: center; margin-bottom: 20px; background: var(--retro-paper); box-shadow: 4px 4px 0px var(--retro-dark); }
+        .day-section { background: var(--retro-paper); border: 1px solid var(--retro-dark); margin-bottom: 12px; box-shadow: 3px 3px 0px var(--retro-dark); overflow: hidden; }
+        .day-header { padding: 12px; background: var(--retro-dark); color: white; display: flex; justify-content: space-between; }
+        .icon-bar { display: flex; gap: 10px; padding: 10px; background: #eee; border-bottom: 1px solid #ddd; justify-content: space-around; }
+        .btn-icon { background: white; border: 1px solid var(--retro-dark); border-radius: 5px; padding: 5px 10px; font-size: 0.8rem; cursor: pointer; box-shadow: 1px 1px 0px var(--retro-dark); }
+        .btn-icon:active { transform: translate(1px, 1px); box-shadow: none; }
+        textarea { width: 100%; height: 120px; border: none; padding: 10px; font-size: 16px; box-sizing: border-box; outline: none; background: transparent; line-height: 1.5; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="date-range">MAY 07 - MAY 13, 2026</div>
-    <h1>東京自由行 · 旅程日記</h1>
-    <div style="font-size: 0.8rem;">Hotel: 相鐵 FRESA INN 日本橋人形町</div>
+    <div style="font-size: 0.7rem; color: var(--retro-red); font-weight: bold;">MAY 07 - MAY 13, 2026</div>
+    <h1 style="font-size: 1.2rem; margin: 5px 0;">東京旅程紀錄面板</h1>
+    <div style="font-size: 0.75rem;">🏨 相鐵 FRESA INN 日本橋人形町</div>
 </header>
 
-<div id="calendar-container">
-    <!-- 5/7 到 5/13 的循環 -->
+<div id="calendar">
     <script>
         const days = [
-            { d: '5/07', w: 'THU', info: '抵達東京 / T-CAT / 人形町' },
-            { d: '5/08', w: 'FRI', info: '銀座探索 / 退稅購物' },
-            { d: '5/09', w: 'SAT', info: '' },
-            { d: '5/10', w: 'SUN', info: '' },
-            { d: '5/11', w: 'MON', info: '' },
-            { d: '5/12', w: 'TUE', info: '' },
-            { d: '5/13', w: 'WED', info: '最後採買 / 返程' }
+            { d: '5/07', w: 'THU' }, { d: '5/08', w: 'FRI' }, { d: '5/09', w: 'SAT' },
+            { d: '5/10', w: 'SUN' }, { d: '5/11', w: 'MON' }, { d: '5/12', w: 'TUE' }, { d: '5/13', w: 'WED' }
         ];
 
-        days.forEach((day, index) => {
+        const categories = [
+            { label: '📍 景點', tag: '【景點】' },
+            { label: '🍱 美食', tag: '【美食】' },
+            { label: '🛍️ 購物', tag: '【購物】' },
+            { label: '🎬 影評', tag: '【影評筆記】' }
+        ];
+
+        days.forEach((day, i) => {
             document.write(`
                 <div class="day-section">
-                    <div class="day-header" onclick="toggleDay(${index})">
-                        <span>${day.d} ${day.w}</span>
-                        <span style="font-size: 0.7rem;">+ 展開行程</span>
+                    <div class="day-header"><span>${day.d} ${day.w}</span></div>
+                    <div class="icon-bar">
+                        ${categories.map(cat => `<button class="btn-icon" onclick="addTag(${i}, '${cat.tag}')">${cat.label}</button>`).join('')}
                     </div>
-                    <div class="day-content" id="content-${index}">
-                        <div style="font-size: 0.7rem; color: #d35400; margin-bottom:5px;">${day.info}</div>
-                        <textarea id="note-${index}" placeholder="點擊輸入當日行程或影評靈感..." oninput="saveNote(${index})"></textarea>
-                    </div>
+                    <textarea id="note-${i}" oninput="save(${i})" placeholder="點擊上方圖示或在此輸入..."></textarea>
                 </div>
             `);
         });
 
-        function toggleDay(index) {
-            const content = document.getElementById(`content-${index}`);
-            content.classList.toggle('active');
+        function addTag(index, tag) {
+            const el = document.getElementById(`note-${index}`);
+            const timestamp = new Date().getHours() + ":" + String(new Date().getMinutes()).padStart(2, '0');
+            el.value += (el.value ? '\n' : '') + tag + ' ' + timestamp + ' - ';
+            el.focus();
+            save(index);
         }
 
-        function saveNote(index) {
-            const val = document.getElementById(`note-${index}`).value;
-            localStorage.setItem(`tokyo_day_${index}`, val);
+        function save(i) { localStorage.setItem(`tokyo_v2_${i}`, document.getElementById(`note-${i}`).value); }
+        window.onload = () => days.forEach((_, i) => {
+            const s = localStorage.getItem(`tokyo_v2_${i}`);
+            if (s我明白你的意思了！你希望這份 5/7 到 5/13 的行事曆能像專業的行程規畫 App 一樣，直接點選 **Icon（圖示）** 來分類加入行程，而不是像現在這樣只能手動打字。
+
+我為你重新設計了這款「**日系復古行程面板**」。每一天現在都有快捷按鈕（景點、美食、購物、影評），點一下就能自動加入分類標籤。
+
+### 🛠️ 請更新 `index.html` 為以下代碼
+```html
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Peter's Tokyo Planner</title>
+    <style>
+        :root { --retro-bg: #f0ede5; --retro-dark: #2c3e50; --retro-red: #d35400; --retro-paper: #ffffff; }
+        body { font-family: "PingFang TC", sans-serif; background-color: var(--retro-bg); color: var(--retro-dark); margin: 0; padding: 15px; }
+        header { border: 2px solid var(--retro-dark); padding: 15px; text-align: center; margin-bottom: 20px; background: var(--retro-paper); box-shadow: 4px 4px 0px var(--retro-dark); }
+        .day-section { background: var(--retro-paper); border: 1px solid var(--retro-dark); margin-bottom: 12px; box-shadow: 3px 3px 0px var(--retro-dark); overflow: hidden; }
+        .day-header { padding: 12px; background: var(--retro-dark); color: white; display: flex; justify-content: space-between; }
+        .icon-bar { display: flex; gap: 10px; padding: 10px; background: #eee; border-bottom: 1px solid #ddd; justify-content: space-around; }
+        .btn-icon { background: white; border: 1px solid var(--retro-dark); border-radius: 5px; padding: 5px 10px; font-size: 0.8rem; cursor: pointer; box-shadow: 1px 1px 0px var(--retro-dark); }
+        .btn-icon:active { transform: translate(1px, 1px); box-shadow: none; }
+        textarea { width: 100%; height: 120px; border: none; padding: 10px; font-size: 16px; box-sizing: border-box; outline: none; background: transparent; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div style="font-size: 0.7rem; color: var(--retro-red); font-weight: bold;">MAY 07 - MAY 13, 2026</div>
+    <h1 style="font-size: 1.2rem; margin: 5px 0;">東京旅程紀錄面板</h1>
+    <div style="font-size: 0.75rem;">🏨 相鐵 FRESA INN 日本橋人形町</div>
+</header>
+
+<div id="calendar">
+    <script>
+        const days = [
+            { d: '5/07', w: 'THU' }, { d: '5/08', w: 'FRI' }, { d: '5/09', w: 'SAT' },
+            { d: '5/10', w: 'SUN' }, { d: '5/11', w: 'MON' }, { d: '5/12', w: 'TUE' }, { d: '5/13', w: 'WED' }
+        ];
+
+        const categories = [
+            { label: '📍 景點', tag: '【景點】' },
+            { label: '🍱 美食', tag: '【美食】' },
+            { label: '🛍️ 購物', tag: '【購物】' },
+            { label: '🎬 影評', tag: '【影評筆記】' }
+        ];
+
+        days.forEach((day, i) => {
+            document.write(`
+                <div class="day-section">
+                    <div class="day-header"><span>${day.d} ${day.w}</span></div>
+                    <div class="icon-bar">
+                        ${categories.map(cat => `<button class="btn-icon" onclick="addTag(${i}, '${cat.tag}')">${cat.label}</button>`).join('')}
+                    </div>
+                    <textarea id="note-${i}" oninput="save(${i})" placeholder="點擊上方圖示或在此輸入..."></textarea>
+                </div>
+            `);
+        });
+
+        function addTag(index, tag) {
+            const el = document.getElementById(`note-${index}`);
+            const timestamp = new Date().getHours() + ":" + String(new Date().getMinutes()).padStart(2, '0');
+            el.value += (el.value ? '\n' : '') + tag + ' ' + timestamp + ' - ';
+            el.focus();
+            save(index);
         }
 
-        window.onload = () => {
-            days.forEach((_, index) => {
-                const saved = localStorage.getItem(`tokyo_day_${index}`);
-                if (saved) document.getElementById(`note-${index}`).value = saved;
-            });
-        };
+        function save(i) { localStorage.setItem(`tokyo_v2_${i}`, document.getElementById(`note-${i}`).value); }
+        window.onload = () => days.forEach((_, i) => {
+            const s = localStorage.getItem(`tokyo_v2_${i}`);
+            if (s) document.getElementById(`note-${i}`).value = s;
+        });
     </script>
-</div>
-
-<div style="text-align: center; margin-top: 30px; font-size: 0.7rem; color: #999; letter-spacing: 1px;">
-    PETER'S PHILOSOPHICAL TRAVEL LOG © 2026
 </div>
 
 </body>
